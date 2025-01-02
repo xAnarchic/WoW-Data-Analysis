@@ -1,9 +1,6 @@
 # WoW-Data-Analysis
 Data analysis project on World of Warcraft raiding data.
 
-Link to project: http://recruiters-love-seeing-live-demos.com/
-
-
 How It's Made:
 Tech used: GraphQL, Python, SQL, Power Bi. 
 
