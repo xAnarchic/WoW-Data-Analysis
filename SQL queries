@@ -1,0 +1,46 @@
+SQL queries - performed on MySQLWorkbench.
+
+Queries used to create a unique, novel player ID that corresponds to a single player.
+
+1) 
+CREATE TABLE IF NOT EXISTS playerids AS 
+	SELECT DISTINCT `Names` players
+	FROM parses;
+
+2)
+ALTER TABLE playerids
+ADD  ID INT NOT NULL AUTO_INCREMENT KEY FIRST;
+
+
+Queries used to clean data in existing tables through the removal of any row duplicates. Each query relates to an existing table that tracks a specific player metric (buffs, deaths, consumables, and parses). 
+
+1)
+CREATE TABLE finalbuffs AS
+    SELECT DISTINCT *
+	FROM buffs b
+	JOIN playerids ON Names = players
+	ORDER BY ID, Names ASC;
+
+2)
+CREATE TABLE finaldeaths AS
+    SELECT DISTINCT *
+	FROM deaths d
+	JOIN playerids ON Names = players
+	ORDER BY ID, Names ASC;
+
+3)
+CREATE TABLE finalconsumables AS
+    SELECT DISTINCT *
+	FROM consumables c
+	JOIN playerids ON Names = players
+	ORDER BY ID, Names ASC;
+
+4)
+CREATE TABLE finalparses AS
+    SELECT DISTINCT *
+	FROM parses pa
+	JOIN playerids ON Names = players
+	ORDER BY ID, Names ASC;
+
+
+
