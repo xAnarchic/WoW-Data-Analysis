@@ -10,6 +10,9 @@ I utilised Python to: query data from a publicly available API via GraphQL that 
 
 During my work on this project, I learned how to: query via GraphQL, clean data using both Python and SQL, collect and organise data into dataframes ready for import into MySQLWorkbench, and visualise data to more easily identify trends in Power Bi.
 
+
 Examples of visualisations:
 
-[ReportCopy.pdf](https://github.com/user-attachments/files/18295366/ReportCopy.pdf)
+[ReportScreenshot.pdf](https://github.com/user-attachments/files/18295411/ReportScreenshot.pdf)
+
+[ReportSnippet.pdf](https://github.com/user-attachments/files/18295406/ReportSnippet.pdf)
