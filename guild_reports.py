@@ -8,22 +8,21 @@ import pandas as pd
 import numpy
 import sys
 
-
 start_script = time.time()
 
-#Authenticating client.
+# Authenticating client.
 client_id = "9d4c1a49-91d2-4b7b-8445-824e4f6bac1b"
 client_secret = "0Y527wHR8EGP7T6Oa1TZdMvuxZFkVSrqYG1DLvIF"
 data = {
     'grant_type': 'client_credentials',
 }
-response = requests.post(url = 'https://www.warcraftlogs.com/oauth/token', data=data, auth=(f'{client_id}', f'{client_secret}'))
+response = requests.post(url='https://www.warcraftlogs.com/oauth/token', data=data,
+                         auth=(f'{client_id}', f'{client_secret}'))
 response.raise_for_status()
 access_token = (response.json())['access_token']
 
-
-#Checks rate limit from API.
-url =  'https://www.warcraftlogs.com/api/v2/client'
+# Checks rate limit from API.
+url = 'https://www.warcraftlogs.com/api/v2/client'
 
 query = """{
             rateLimitData{
@@ -33,26 +32,26 @@ query = """{
                 }"""
 
 headers = {
-        'Authorization' : f'Bearer {access_token}'
-    }
+    'Authorization': f'Bearer {access_token}'
+}
 
 try:
-    response1 = requests.post(url, json= {'query' : query}, headers = headers)
+    response1 = requests.post(url, json={'query': query}, headers=headers)
     response1.raise_for_status()
     data = response1.json()
     print(data)
 
 except requests.HTTPError as e:
-    print(f"Error code: {e} . Please try again later. The cooldown period for this script is an hour long from the moment it is first run.")
+    print(
+        f"Error code: {e} . Please try again later. The cooldown period for this script is an hour long from the moment it is first run.")
     sys.exit()
 
-
-#Collecting information from user about the guild and the raid zone to collect information from
+# Collecting information from user about the guild and the raid zone to collect information from
 while True:
     try:
         print("What is the ID of the raid zone you would like to collect information from?")
         zoneID = int(input())
-        if type(zoneID) == int:
+        if isinstance(zoneID, int):
             print("Thank you!")
 
         print("What is the name of your guild?")
@@ -63,21 +62,22 @@ while True:
             raise ValueError
 
         print("What is the ID of your guild?")
-        guildID = int(input())
-        if type(guildID) == int:
+        guildID: int = int(input())
+        if isinstance(guildID, int):
             print("Thank you!")
 
         print("Attempting to request data.")
         break
 
     except ValueError:
-        print("Please enter an integer value for the raid zone and guild ID. Please enter a string value for the name of the guild.")
+        print(
+            "Please enter an integer value for the raid zone and guild ID. Please enter a string value for the name "
+            "of the guild.")
         print('-------------------------------------------')
         continue
 
 
-
-#Runs a query to get general player/ raid data such as: buffs, kill times, deaths, consumables, etc.
+# Runs a query to get general player/ raid data such as: buffs, kill times, deaths, consumables, etc.
 def runQuery1(guildID, guildName, zoneID) -> dict:
     generalQuery = """
             query generalInfo($guildID : Int!, $guildName : String!, $zoneID : Int!){
@@ -104,16 +104,16 @@ def runQuery1(guildID, guildName, zoneID) -> dict:
     variables = {
         'guildID': guildID,
         'guildName': guildName,
-        'zoneID' : zoneID}
+        'zoneID': zoneID}
 
-    response = requests.post(url = url, json = {"query" : generalQuery, 'variables' : variables}, headers = headers)
+    response = requests.post(url=url, json={"query": generalQuery, 'variables': variables}, headers=headers)
     response.raise_for_status()
     player_data = response.json()
 
     return player_data
 
 
-#Runs a different query to specifically get ranking data based on "damage per second" (dps) or "healing per second" (hps).
+# Runs a different query to specifically get ranking data based on "damage per second" (dps) or "healing per second" (hps).
 def runQuery2(metric, guildID, guildName, zoneID) -> dict:
     rankingsQuery = """
             query rankingsInfo($guildID : Int!, $guildName : String!, $metric : ReportRankingMetricType!, $zoneID : Int!){
@@ -126,36 +126,36 @@ def runQuery2(metric, guildID, guildName, zoneID) -> dict:
                         }"""
 
     headers = {
-        'Authorization' : f'Bearer {access_token}'
+        'Authorization': f'Bearer {access_token}'
     }
 
     variables = {
-        'guildID' : guildID,
-        'guildName' : guildName,
-        'metric' : metric,
-        'zoneID' : zoneID}
+        'guildID': guildID,
+        'guildName': guildName,
+        'metric': metric,
+        'zoneID': zoneID}
 
-    response = requests.post(url = url, json = {"query" : rankingsQuery, 'variables' : variables}, headers = headers)
+    response = requests.post(url=url, json={"query": rankingsQuery, 'variables': variables}, headers=headers)
     response.raise_for_status()
     ranking_data = response.json()
 
     return ranking_data
 
 
-#Returns the number of reports a guild has uploaded to their profile.
+# Returns the number of reports a guild has uploaded to their profile.
 def reportNum() -> int:
     report_num = len(player_data['data']['reportData']['reports']['data'])
     return report_num
 
 
-#Returns the total time spent raiding from a report.
+# Returns the total time spent raiding from a report.
 def raidTime(num) -> dict:
-    raidEnd = round(int(player_data['data']['reportData']['reports']['data'][num]['endTime'])/1000)
-    raidStart = round(int(player_data['data']['reportData']['reports']['data'][num]['startTime'])/1000)
+    raidEnd = round(int(player_data['data']['reportData']['reports']['data'][num]['endTime']) / 1000)
+    raidStart = round(int(player_data['data']['reportData']['reports']['data'][num]['startTime']) / 1000)
     raidLength = raidEnd - raidStart
     raidLengthConverted = time.strftime('%H:%M:%S', time.gmtime(raidLength))
-    timeDict = ({'date' : date,
-                'raidLength' : raidLengthConverted})
+    timeDict = ({'date': date,
+                 'raidLength': raidLengthConverted})
     return timeDict
 
 
@@ -166,7 +166,7 @@ def raidDate(num):
     return datetime.fromtimestamp(raidstart).date()
 
 
-#Returns the global buffs all players had active during a raid, according to a report.
+# Returns the global buffs all players had active during a raid, according to a report.
 def buffs(num, role_data, date) -> list:
     buff_data = []
     role_count = len(role_data)
@@ -174,17 +174,23 @@ def buffs(num, role_data, date) -> list:
         for num in range(role_count):
             name = role_data[num]['name']
             not_unique_buffs = ({
-                'date' : date,
+                'date': date,
                 'player': name
             })
 
             unique_buffs = ({
-                'date' : date,
+                'date': date,
                 'player': name
             })
 
             try:
-                allWorldBuffsList = [rf'Spirit of Zandalar','Rallying Cry of the Dragonslayer', 'Might of Stormwind', 'Songflower Serenade', 'Fengus\' Ferocity', 'Slip\'kik\'s Savvy', 'Mol\'dar\'s Moxie', 'Sayge\'s Dark Fortune of Damage', 'Sayge\'s Dark Fortune of Intelligence', 'Sayge\'s Dark Fortune of Resistance', 'Cleansed Firewater', 'Songflower Lullaby', 'Blessing of Neptulon', 'Dark Fortune of Damage', 'Dreams of Zandalar', 'Might of Blackrock', 'Horn of the Dawn']
+                allWorldBuffsList = [rf'Spirit of Zandalar', 'Rallying Cry of the Dragonslayer', 'Might of Stormwind',
+                                     'Songflower Serenade', 'Fengus\' Ferocity', 'Slip\'kik\'s Savvy',
+                                     'Mol\'dar\'s Moxie', 'Sayge\'s Dark Fortune of Damage',
+                                     'Sayge\'s Dark Fortune of Intelligence', 'Sayge\'s Dark Fortune of Resistance',
+                                     'Cleansed Firewater', 'Songflower Lullaby', 'Blessing of Neptulon',
+                                     'Dark Fortune of Damage', 'Dreams of Zandalar', 'Might of Blackrock',
+                                     'Horn of the Dawn']
                 for buff in role_data[num]['combatantInfo']['artifact']:
                     if buff['name'] in allWorldBuffsList:
                         not_unique_buffs[buff['name']] = 1
@@ -226,14 +232,14 @@ def getPlayerIDs(role_data, date) -> list:
         name = player['name']
         players = ({
             'id': int(id),
-            'name' : name,
-            'date' : date
+            'name': name,
+            'date': date
         })
         roleIDsNames.append(players)
     return roleIDsNames
 
 
-#Returns the consumables (items that, when used, enhance a player's combat abilities) of ell players within a raid's report.
+# Returns the consumables (items that, when used, enhance a player's combat abilities) of ell players within a raid's report.
 def getConsumablesData(roleIDsNames, number, date, guildName, guildID, zoneID) -> list:
     cons_data = []
     try:
@@ -249,31 +255,34 @@ def getConsumablesData(roleIDsNames, number, date, guildName, guildID, zoneID) -
                                 }
                             }"""
 
-
             variables = {
-                'guildName' : guildName,
-                'guildID' : guildID,
-                'source' : num,
-                'zoneID' : zoneID}
+                'guildName': guildName,
+                'guildID': guildID,
+                'source': num,
+                'zoneID': zoneID}
 
             headers = {
                 'Authorization': f'Bearer {access_token}'
             }
 
-            response = requests.post(url = url, json = {"query" : consQuery, 'variables' : variables}, headers = headers)
+            response = requests.post(url=url, json={"query": consQuery, 'variables': variables}, headers=headers)
             response.raise_for_status()
             spec_data = response.json()
 
             player_cons = {
                 'name': source['name'],
-                'id' : source['id'],
-                'date' : date
+                'id': source['id'],
+                'date': date
             }
-
 
             all_roles_data = spec_data['data']['reportData']['reports']['data'][number]['table']['data']['auras']
 
-            listOfConsumables = ['Fire Protection', 'Shadow Protection', 'Nature Protection', 'Frost Protection', 'Winterfall Firewater', 'Elixir of the Mongoose', 'Elixir of the Giants', 'Arcane Elixir', 'Frost Power', 'Greater Firepower', 'Shadow Power', 'Mana Regeneration', 'Increased Intellect', 'Greater Armor', 'Health II', 'Free Action', 'Invulnerability', 'Gordok Green Grog', 'Rumsey Rum Black Label', 'Cleansed Firewater']
+            listOfConsumables = ['Fire Protection', 'Shadow Protection', 'Nature Protection', 'Frost Protection',
+                                 'Winterfall Firewater', 'Elixir of the Mongoose', 'Elixir of the Giants',
+                                 'Arcane Elixir', 'Frost Power', 'Greater Firepower', 'Shadow Power',
+                                 'Mana Regeneration', 'Increased Intellect', 'Greater Armor', 'Health II',
+                                 'Free Action', 'Invulnerability', 'Gordok Green Grog', 'Rumsey Rum Black Label',
+                                 'Cleansed Firewater']
             try:
                 for consume in all_roles_data:
                     if consume['name'] in listOfConsumables:
@@ -281,7 +290,7 @@ def getConsumablesData(roleIDsNames, number, date, guildName, guildID, zoneID) -
             except TypeError:
                 print('There was an error here, please resolve this.')
                 continue
-            if len(player_cons) > 3:   #removes the dicts that contain players that slipped into the report but weren't present in the raid
+            if len(player_cons) > 3:  #removes the dicts that contain players that slipped into the report but weren't present in the raid
                 cons_data.append(player_cons)
             else:
                 continue
@@ -289,21 +298,24 @@ def getConsumablesData(roleIDsNames, number, date, guildName, guildID, zoneID) -
                 for item in listOfConsumables:
                     character.setdefault(item, 0)
     except requests.HTTPError as e:
-        print(f"Error code: {e} . Please try again later. The cooldown period for this script is an hour long from the moment it is first run.")
+        print(
+            f"Error code: {e} . Please try again later. The cooldown period for this script is an hour long from the moment it is first run.")
         sys.exit()
     return cons_data
 
 
-#Returns the time taken to kill each boss from a raid's report, as well as the overall time taken to clear the raid.
+# Returns the time taken to kill each boss from a raid's report, as well as the overall time taken to clear the raid.
 def getKillTimes(num, date, zoneID) -> list:
     boss_times_data = []
     boss_count = []
-    bwl_bosses = ['Razorgore the Untamed', 'Vaelastrasz the Corrupt', 'Broodlord Lashlayer', 'Firemaw', 'Flamegor', 'Chromaggus', 'Nefarian']
-    aq40_bosses = ['The Prophet Skeram', 'Silithid Royalty', 'Battleguard Sartura', 'Fankriss the Unyielding', 'Viscidus', 'Princess Huhuran', 'Twin Emperors', 'Ouro', 'Cthun', f'C\'thun']
+    bwl_bosses = ['Razorgore the Untamed', 'Vaelastrasz the Corrupt', 'Broodlord Lashlayer', 'Firemaw', 'Flamegor',
+                  'Chromaggus', 'Nefarian']
+    aq40_bosses = ['The Prophet Skeram', 'Silithid Royalty', 'Battleguard Sartura', 'Fankriss the Unyielding',
+                   'Viscidus', 'Princess Huhuran', 'Twin Emperors', 'Ouro', 'Cthun', f'C\'Thun']
 
     if zoneID == 2016:  #This zoneID corresponds to the raid "AQ40"
         bosses = aq40_bosses
-    elif zoneID == 2013: #This zoneID corresponds to the raid "BWL"
+    elif zoneID == 2013:  #This zoneID corresponds to the raid "BWL"
         bosses = bwl_bosses
 
     kill_times_check = player_data['data']['reportData']['reports']['data'][num]['fights']
@@ -313,23 +325,21 @@ def getKillTimes(num, date, zoneID) -> list:
             boss_count.append(boss)
     bosses_killed = len(boss_count)
 
-
     for encounterID in range(bosses_killed):
         startTime = boss_count[encounterID]['startTime']
         endTime = boss_count[encounterID]['endTime']
         name = boss_count[encounterID]['name']
-        fight_length = round(int(endTime)/1000 - int(startTime)/1000)
+        fight_length = round(int(endTime) / 1000 - int(startTime) / 1000)
         fights = ({
             'boss': name,
             'fight time': fight_length,
             'date': date
         })
         boss_times_data.append(fights)
-    print(boss_times_data)
     return boss_times_data
 
 
-#Returns the number of deaths by each player across the entire raid, according to a report.
+# Returns the number of deaths by each player across the entire raid, according to a report.
 def getDeaths(num, date) -> list:
     check = player_data['data']['reportData']['reports']['data'][num]['table']['data']['entries']
     all_names = []
@@ -343,15 +353,15 @@ def getDeaths(num, date) -> list:
     for name in unique_names:
         deaths = all_names.count(name)
         deaths_dict = ({
-            'player' : name,
-            'deaths' : deaths,
-            'Date' : date
+            'player': name,
+            'deaths': deaths,
+            'Date': date
         })
         deaths_list.append(deaths_dict)
     return deaths_list
 
 
-#Returns the parses achieved by each player, for each boss as well as the overall raid, from a raid report.
+# Returns the parses achieved by each player, for each boss as well as the overall raid, from a raid report.
 def getParses(num, role, roleRankingData, date) -> dict:
     healersList = []
     dpsList = []
@@ -369,7 +379,7 @@ def getParses(num, role, roleRankingData, date) -> dict:
                 player = dpsRanking[bossNum]['roles']['dps']['characters'][dpsNum]['name']
                 dps_dict = {
                     'player name': player,
-                    'date' : date,
+                    'date': date,
                     'rank': rankCheck,
                     'boss name': bossName
                 }
@@ -396,20 +406,20 @@ def getParses(num, role, roleRankingData, date) -> dict:
                 rankCheck = healersRanking[bossNum]['roles']['healers']['characters'][healerNum]['rankPercent']
                 player = healersRanking[bossNum]['roles']['healers']['characters'][healerNum]['name']
                 healers_dict = {
-                    'player name' : player,
+                    'player name': player,
                     'date': date,
-                    'rank' : rankCheck,
-                    'boss name' : bossName
+                    'rank': rankCheck,
+                    'boss name': bossName
                 }
                 healersList.append(healers_dict)
     parseData = {
-        'healersRankings' : healersList,
-        'dpsRankings' : dpsList
+        'healersRankings': healersList,
+        'dpsRankings': dpsList
     }
     return parseData
 
 
-#Function calls that run the GraphQL queries that provide the API data.
+# Function calls that run the GraphQL queries that provide the API data.
 
 try:
     player_data = runQuery1(guildID, guildName, zoneID)
@@ -418,25 +428,24 @@ try:
     player_hps_data = runQuery2('hps', guildID, guildName, zoneID)
 
 except requests.HTTPError as e:
-    print(f"Error code: {e} . If timed out, please try again later. If too many requests have been made, the cooldown period for this script is an hour long from the moment it is first run.")
+    print(
+        f"Error code: {e} . If timed out, please try again later. If too many requests have been made, the cooldown period for this script is an hour long from the moment it is first run.")
     sys.exit()
 
-
-
-
-#Returns the number of uploaded reports from a guild - determines the number of loops to be performed.
+# Returns the number of uploaded reports from a guild - determines the number of loops to be performed.
 report_num = reportNum()
 
 options = []
 for num in range(report_num):
     formattedDate = raidDate(num).strftime('%d, %m, %Y')
-    option = {num : formattedDate}
+    option = {num: formattedDate}
     options.append(option)
 
 while True:
     try:
         choices_from_user = []
-        print(f"Please select the number corresponding to the raid date of interest. You will have the option to select up to 3 numbers from the following: {options}")
+        print(
+            f"Please select the number corresponding to the raid date of interest. You will have the option to select up to 3 numbers from the following: {options}")
         print("To start with, how many raids would you like data from?")
         num = int(input())
         if num > 3:
@@ -460,7 +469,7 @@ while True:
     except ValueError:
         print("Selections are not applicable. Please ensure that your choices are from the numbers provided.")
 
-#The following variables are empty lists to append each report's data to.
+# The following variables are empty lists to append each report's data to.
 entire_role_data = []
 
 entire_deaths_data = []
@@ -475,14 +484,16 @@ entire_cons_data = []
 
 entire_parses_data = []
 
-#Calls the various, defined functions to obtain the data of interest from each report of a guild.
+# Calls the various, defined functions to obtain the data of interest from each report of a guild.
 try:
     for num in choices_from_user:
-
-
-        dps_data = player_data['data']['reportData']['reports']['data'][num]['playerDetails']['data']['playerDetails']['dps']
-        healers_data = player_data['data']['reportData']['reports']['data'][num]['playerDetails']['data']['playerDetails']['healers']
-        tanks_data = player_data['data']['reportData']['reports']['data'][num]['playerDetails']['data']['playerDetails']['tanks']
+        dps_data = player_data['data']['reportData']['reports']['data'][num]['playerDetails']['data']['playerDetails'][
+            'dps']
+        healers_data = \
+            player_data['data']['reportData']['reports']['data'][num]['playerDetails']['data']['playerDetails'][
+                'healers']
+        tanks_data = \
+            player_data['data']['reportData']['reports']['data'][num]['playerDetails']['data']['playerDetails']['tanks']
 
         date = raidDate(num)
         raid_times = raidTime(num)
@@ -528,11 +539,11 @@ try:
 except IndexError:
     print(rf'This report doesn\'t exist')
 
-print(entire_kill_times_data)
 
-#Initially assigns variables a value that reflects the raid information the user has requested, and then converts the gathered data into dataframes.
-def creatingDataFrames(zoneID, entire_parses_data, entire_cons_data, entire_buffs_data, entire_deaths_data, entire_raid_times_data, entire_kill_times_data):
 
+# Initially assigns variables a value that reflects the raid information the user has requested, and then converts the gathered data into dataframes.
+def creatingDataFrames(zoneID, entire_parses_data, entire_cons_data, entire_buffs_data, entire_deaths_data,
+                       entire_raid_times_data, entire_kill_times_data):
     bwlParsesDFOrder = [('player name', ''), ('date', ''), ('rank', 'Razorgore the Untamed'),
                         ('rank', 'Vaelastrasz the Corrupt'), ('rank', 'Broodlord Lashlayer'), ('rank', 'Firemaw'),
                         ('rank', 'Ebonroc / Flamegor'), ('rank', 'Chromaggus'), ('rank', 'Nefarian')]
@@ -541,8 +552,10 @@ def creatingDataFrames(zoneID, entire_parses_data, entire_cons_data, entire_buff
                        ('rank', 'Battleguard Sartura'), ('rank', 'Fankriss the Unyielding'), ('rank', 'Viscidus'),
                        ('rank', 'Princess Huhuran'), ('rank', 'Twin Emperors'), ('rank', 'Ouro'), ('rank', 'C\'thun')]
 
-    bwlKillTimesDFOrder = ['Razorgore the Untamed', 'Vaelastrasz the Corrupt', 'Broodlord Lashlayer', 'Firemaw', 'Flamegor', 'Chromaggus', 'Nefarian']
-    aqKillTimesDFOrder = ['The Prophet Skeram', 'Silithid Royalty', 'Battleguard Sartura', 'Fankriss the Unyielding', 'Viscidus', 'Princess Huhuran', 'Twin Emperors', 'Ouro', 'C\'thun']
+    bwlKillTimesDFOrder = ['Razorgore the Untamed', 'Vaelastrasz the Corrupt', 'Broodlord Lashlayer', 'Firemaw',
+                           'Flamegor', 'Chromaggus', 'Nefarian']
+    aqKillTimesDFOrder = ['The Prophet Skeram', 'Silithid Royalty', 'Battleguard Sartura', 'Fankriss the Unyielding',
+                          'Viscidus', 'Princess Huhuran', 'Twin Emperors', 'Ouro', 'C\'Thun']
 
     if zoneID == 2016:
         parsesDFOrder = aqParsesDFOrder
@@ -555,12 +568,17 @@ def creatingDataFrames(zoneID, entire_parses_data, entire_cons_data, entire_buff
         first_boss = 'Razorgore'
 
     entireParsesDataDF = pd.DataFrame(entire_parses_data)
-    entireParsesDFPivot = entireParsesDataDF.pivot_table(index = ['player name', "date"], values = ['rank'], columns = ["boss name"], aggfunc='first')
+    entireParsesDFPivot = entireParsesDataDF.pivot_table(index=['player name', "date"], values=['rank'],
+                                                         columns=["boss name"], aggfunc='first')
     entireParsesDFIndex = entireParsesDFPivot.reset_index()
     entireParsesDF = entireParsesDFIndex[parsesDFOrder]
 
+    listOfConsumables = ['name', 'id', 'date', 'Fire Protection', 'Shadow Protection', 'Nature Protection',
+                         'Frost Protection', 'Winterfall Firewater', 'Elixir of the Mongoose', 'Elixir of the Giants',
+                         'Arcane Elixir', 'Frost Power', 'Greater Firepower', 'Shadow Power', 'Mana Regeneration',
+                         'Increased Intellect', 'Greater Armor', 'Health II', 'Free Action', 'Invulnerability',
+                         'Gordok Green Grog', 'Rumsey Rum Black Label', 'Cleansed Firewater']
 
-    listOfConsumables = ['name', 'id', 'date', 'Fire Protection', 'Shadow Protection', 'Nature Protection', 'Frost Protection','Winterfall Firewater', 'Elixir of the Mongoose', 'Elixir of the Giants', 'Arcane Elixir','Frost Power', 'Greater Firepower', 'Shadow Power', 'Mana Regeneration', 'Increased Intellect','Greater Armor', 'Health II', 'Free Action', 'Invulnerability', 'Gordok Green Grog','Rumsey Rum Black Label']
     entireConsDataDF = pd.DataFrame(entire_cons_data)
     entireConsDF = entireConsDataDF[listOfConsumables]
 
@@ -570,23 +588,24 @@ def creatingDataFrames(zoneID, entire_parses_data, entire_cons_data, entire_buff
 
     entireRaidTimesDF = pd.DataFrame(entire_raid_times_data)
 
-
     entireKillTimesDataDF = pd.DataFrame(entire_kill_times_data)
-    print(entireKillTimesDataDF.to_string())
-    entireKillTimesData1 = entireKillTimesDataDF.set_index(['date', 'boss', entireKillTimesDataDF.boss.eq(first_boss).cumsum()]).unstack(-2)
+    entireKillTimesData1 = entireKillTimesDataDF.set_index(
+        ['date', 'boss', entireKillTimesDataDF.boss.eq(first_boss).cumsum()]).unstack(-2)
     entireKillTimesData1.index = entireKillTimesData1.index.droplevel(-1)
     entireKillTimesData1.columns = entireKillTimesData1.columns.droplevel(0)
     entireKillTimesData2 = entireKillTimesData1[killTimesDFOrder]
     entireKillTimesDF = entireKillTimesData2.reset_index()
 
-    allDataFrames = {'entireParsesDataDF' : entireParsesDataDF, 'entireConsDF' : entireConsDF, 'entireBuffsDF' : entireBuffsDF, 'entireDeathsDF' : entireDeathsDF, 'entireRaidTimeDF' : entireRaidTimeDF, 'entireKillTimesDF': entireKillTimesDF}
+    allDataFrames = {'entireParsesDF': entireParsesDF, 'entireConsDF': entireConsDF,
+                     'entireBuffsDF': entireBuffsDF, 'entireDeathsDF': entireDeathsDF,
+                     'entireRaidTimesDF': entireRaidTimesDF, 'entireKillTimesDF': entireKillTimesDF}
 
     return allDataFrames
 
 
-#The following functions: create the connection to the mysqlworkbench server, create tables and insert the data acquired.
+# The following functions: create the connection to the mysqlworkbench server, create tables and insert the data acquired.
 
-#Returns the connection to the database.
+# Returns the connection to the database.
 def databaseConnection(zoneID, user, passwd):
     db_connection = None
 
@@ -599,7 +618,7 @@ def databaseConnection(zoneID, user, passwd):
         db_connection = mysql.connector.connect(
             user=user,
             passwd=passwd,
-            database= database
+            database=database
         )
         print('SQL database connection established')
 
@@ -608,12 +627,12 @@ def databaseConnection(zoneID, user, passwd):
 
     return db_connection
 
-#Re-usable function that inserts the supplied data into the corresponding table.
-def executionFunct(db_connection, sqlStatement):
 
+# Re-usable function that inserts the supplied data into the corresponding table.
+def executionFunct(db_connection, sqlStatement):
     try:
         cursorObj = db_connection.cursor()
-        cursorObj.execute(operation = sqlStatement)
+        cursorObj.execute(operation=sqlStatement)
         db_connection.commit()
         print('Table successfully created')
 
@@ -621,9 +640,8 @@ def executionFunct(db_connection, sqlStatement):
         print(rf'The following error has occurred: {e}')
 
 
-#Creates a table that holds a guild's "raid time" data, across all of their reports for that instance.
+# Creates a table that holds a guild's "raid time" data, across all of their reports for that instance.
 def raidTimesTableCreation(db_connection):
-
     sqlStatement = """CREATE TABLE IF NOT EXISTS raidTime (
                             Date DATE,
                             `Raid clear time` TIME);"""
@@ -631,9 +649,8 @@ def raidTimesTableCreation(db_connection):
     executionFunct(db_connection, sqlStatement)
 
 
-#Creates a table that holds a guild's "deaths" data, across all of their reports for that instance.
+# Creates a table that holds a guild's "deaths" data, across all of their reports for that instance.
 def deathsTableCreation(db_connection):
-
     sqlStatement = """CREATE TABLE IF NOT EXISTS deaths (
                             Names VARCHAR(255),
                             `Deaths count` INTEGER,
@@ -642,11 +659,12 @@ def deathsTableCreation(db_connection):
     executionFunct(db_connection, sqlStatement)
 
 
-#Creates a table that holds a guild's "kill_times" data (time taken to kill each boss), across all of their reports for that instance.
+# Creates a table that holds a guild's "kill_times" data (time taken to kill each boss), across all of their reports for that instance.
 def killTimesTableCreation(db_connection, zoneID):
-
-    bwl = ['Razorgore', 'Vaelastrasz', 'Broodlord', 'Firemaw', 'Flamegor', 'Chromaggus', 'Nefarian', 'BlankColumn1', 'BlankColumn2']
-    aq = ['The Prophet Skeram', 'Silithid Royalty', 'Battleguard Sartura', 'Fankriss the Unyielding', 'Viscidus', 'Princess Huhuran', 'Twin Emperors', 'Ouro', 'C\'thun']
+    bwl = ['Razorgore', 'Vaelastrasz', 'Broodlord', 'Firemaw', 'Flamegor', 'Chromaggus', 'Nefarian', 'BlankColumn1',
+           'BlankColumn2']
+    aq = ['The Prophet Skeram', 'Silithid Royalty', 'Battleguard Sartura', 'Fankriss the Unyielding', 'Viscidus',
+          'Princess Huhuran', 'Twin Emperors', 'Ouro', 'C\'Thun']
 
     if zoneID == 2016:
         raid = aq
@@ -664,14 +682,15 @@ def killTimesTableCreation(db_connection, zoneID):
                         `{Boss6}` INTEGER,
                         `{Boss7}` INTEGER,
                         `{Boss8}` INTEGER,
-                        `{Boss9}` INTEGER);""".format(Boss1 = raid[0], Boss2 = raid[1], Boss3 = raid[2], Boss4 = raid[3], Boss5 = raid[4], Boss6 = raid[5], Boss7 = raid[6], Boss8 = raid[7], Boss9 = raid[8])
+                        `{Boss9}` INTEGER);""".format(Boss1=raid[0], Boss2=raid[1], Boss3=raid[2], Boss4=raid[3],
+                                                      Boss5=raid[4], Boss6=raid[5], Boss7=raid[6], Boss8=raid[7],
+                                                      Boss9=raid[8])
 
     executionFunct(db_connection, sqlStatement)
 
 
-#Creates a table that holds a guild's "buffs" data, across all of their reports for that instance.
+# Creates a table that holds a guild's "buffs" data, across all of their reports for that instance.
 def buffsTableCreation(db_connection):
-
     sqlStatement = """CREATE TABLE IF NOT EXISTS buffs (
                             Date DATE,
                             Names VARCHAR(255),
@@ -687,9 +706,8 @@ def buffsTableCreation(db_connection):
     executionFunct(db_connection, sqlStatement)
 
 
-#Creates a table to hold a guild's "consumables" data, across all of their rports for that instance.
+# Creates a table to hold a guild's "consumables" data, across all of their rports for that instance.
 def consTableCreation(db_connection):
-
     sqlStatement = """CREATE TABLE IF NOT EXISTS consumables (
                             `Names` VARCHAR(255),
                             `IDs` INTEGER,
@@ -717,11 +735,13 @@ def consTableCreation(db_connection):
 
     executionFunct(db_connection, sqlStatement)
 
-#Creates a table to hold a guild's "parses" data, across all of their rports for that instance.
-def parsesTableCreation(db_connection, zoneID):
 
-    bwl = ['Razorgore', 'Vaelastrasz', 'Broodlord', 'Firemaw', 'Flamegor', 'Chromaggus', 'Nefarian', 'BlankColumn1', 'BlankColumn2']
-    aq = ['The Prophet Skeram', 'Silithid Royalty', 'Battleguard Sartura', 'Fankriss the Unyielding', 'Viscidus', 'Princess Huhuran', 'Twin Emperors', 'Ouro', 'C\'thun']
+# Creates a table to hold a guild's "parses" data, across all of their rports for that instance.
+def parsesTableCreation(db_connection, zoneID):
+    bwl = ['Razorgore', 'Vaelastrasz', 'Broodlord', 'Firemaw', 'Flamegor', 'Chromaggus', 'Nefarian', 'BlankColumn1',
+           'BlankColumn2']
+    aq = ['The Prophet Skeram', 'Silithid Royalty', 'Battleguard Sartura', 'Fankriss the Unyielding', 'Viscidus',
+          'Princess Huhuran', 'Twin Emperors', 'Ouro', 'C\'thun']
 
     if zoneID == 2016:
         raid = aq
@@ -739,19 +759,19 @@ def parsesTableCreation(db_connection, zoneID):
                             `{Boss6}` INTEGER,
                             `{Boss7}` INTEGER,
                             `{Boss8}` INTEGER,
-                            `{Boss9}` INTEGER);""".format(Boss1 = raid[0], Boss2 = raid[1], Boss3 = raid[2], Boss4 = raid[3], Boss5 = raid[4], Boss6 = raid[5], Boss7 = raid[6], Boss8 = raid[7], Boss9 = raid[8])
+                            `{Boss9}` INTEGER);""".format(Boss1=raid[0], Boss2=raid[1], Boss3=raid[2], Boss4=raid[3],
+                                                          Boss5=raid[4], Boss6=raid[5], Boss7=raid[6], Boss8=raid[7],
+                                                          Boss9=raid[8])
 
     executionFunct(db_connection, sqlStatement)
 
 
-#Inserts the "consumables" data into its corresponding table.
+# Inserts the "consumables" data into its corresponding table.
 def consDataInsertions(db_connection, entireConsDF):
-
-    sqlStatement =  """INSERT INTO consumables (`Names`, `IDs`, `Date`, `Fire Protection`, `Shadow Protection`, `Nature Protection`, `Frost Protection`, `Winterfall Firewater`, `Elixir of the Mongoose`, `Elixir of the Giants`, `Arcane Elixir`, `Frost Power`, `Greater Firepower`, `Shadow Power`, `Mana Regeneration`, `Increased Intellect`, `Greater Armor`, `Health II`, `Free Action`, `Invulnerability`, `Gordok Green Grog`, `Rumsey Rum Black Label`, `Cleansed Firewater`)
+    sqlStatement = """INSERT INTO consumables (`Names`, `IDs`, `Date`, `Fire Protection`, `Shadow Protection`, `Nature Protection`, `Frost Protection`, `Winterfall Firewater`, `Elixir of the Mongoose`, `Elixir of the Giants`, `Arcane Elixir`, `Frost Power`, `Greater Firepower`, `Shadow Power`, `Mana Regeneration`, `Increased Intellect`, `Greater Armor`, `Health II`, `Free Action`, `Invulnerability`, `Gordok Green Grog`, `Rumsey Rum Black Label`, `Cleansed Firewater`)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
-    consDataTuple = [tuple(cons) for cons in entireConsData.to_numpy()]
-
+    consDataTuple = [tuple(cons) for cons in entireConsDF.to_numpy()]
     try:
         cursorObj = db_connection.cursor()
         cursorObj.executemany(sqlStatement, consDataTuple)
@@ -762,10 +782,9 @@ def consDataInsertions(db_connection, entireConsDF):
         print(rf'The following error has occurred: {e}')
 
 
-#Inserts the "deaths" data into its corresponding table.
+# Inserts the "deaths" data into its corresponding table.
 def deathsDataInsertions(db_connection, entireDeathsDF):
-
-    sqlStatement =  """INSERT INTO deaths (`Names`, `Deaths count`, `Date`)
+    sqlStatement = """INSERT INTO deaths (`Names`, `Deaths count`, `Date`)
                         VALUES (%s, %s, %s);"""
 
     deathsDataTuple = [tuple(deaths) for deaths in entireDeathsDF.to_numpy()]
@@ -780,19 +799,20 @@ def deathsDataInsertions(db_connection, entireDeathsDF):
         print(rf'The following error has occurred: {e}')
 
 
-#Inserts the "kill times" data into its corresponding table.
+# Inserts the "kill times" data into its corresponding table.
 def killTimesDataInsertions(db_connection, entireKillTimesDF, zoneID):
-
     bwl = "(`Date`, `Razorgore`, `Vaelastrasz`, `Broodlord`, `Firemaw`, `Flamegor`, `Chromaggus`, `Nefarian`)"
-    aq = "(`Date`, 'The Prophet Skeram', `Silithid Royalty`, `Battleguard Sartura`, `Fankriss the Unyielding`, `Viscidus`, `Princess Huhuran`, `Twin Emperors`, `Ouro`, `C\'thun`)"
+    aq = "(`Date`, `The Prophet Skeram`, `Silithid Royalty`, `Battleguard Sartura`, `Fankriss the Unyielding`, `Viscidus`, `Princess Huhuran`, `Twin Emperors`, `Ouro`, `C\'Thun`)"
 
     if zoneID == 2016:
         raid = aq
+        params = "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     if zoneID == 2013:
         raid = bwl
+        params = "(%s, %s, %s, %s, %s, %s, %s, %s)"
 
-    sqlStatement =  """INSERT INTO kill_times {raid}
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s);""".format(raid = raid)
+    sqlStatement = """INSERT INTO kill_times {raid}
+                        VALUES {params};""".format(raid=raid, params=params)
 
     entireKillTimesDF = entireKillTimesDF.replace(numpy.nan, 0)
     killTimesDataTuple = [tuple(killTimes) for killTimes in entireKillTimesDF.to_numpy()]
@@ -807,10 +827,9 @@ def killTimesDataInsertions(db_connection, entireKillTimesDF, zoneID):
         print(rf'The following error has occurred: {e}')
 
 
-#Inserts the "raid time" data into its corresponding table.
+# Inserts the "raid time" data into its corresponding table.
 def raidTimesDataInsertions(db_connection, entireRaidTimesDF):
-
-    sqlStatement =  """INSERT INTO raidtime (`Date`, `Raid clear time`)
+    sqlStatement = """INSERT INTO raidtime (`Date`, `Raid clear time`)
                         VALUES (%s, %s);"""
 
     raidTimesDataTuple = [tuple(raidTimes) for raidTimes in entireRaidTimesDF.to_numpy()]
@@ -825,10 +844,9 @@ def raidTimesDataInsertions(db_connection, entireRaidTimesDF):
         print(rf'The following error has occurred: {e}')
 
 
-#Inserts the "buffs" data into its corresponding table.
+# Inserts the "buffs" data into its corresponding table.
 def buffsDataInsertions(db_connection, entireBuffsDF):
-
-    sqlStatement =  """INSERT INTO buffs (`Date`, `Names`, `Spirit of Zandalar`,`Rallying Cry of the Dragonslayer`, `Might of Stormwind`, `Songflower Serenade`, `Fengus' Ferocity`, `Slip'kik's Savvy`, `Mol'dar's Moxie`, `Darkmoon Faire`)
+    sqlStatement = """INSERT INTO buffs (`Date`, `Names`, `Spirit of Zandalar`,`Rallying Cry of the Dragonslayer`, `Might of Stormwind`, `Songflower Serenade`, `Fengus' Ferocity`, `Slip'kik's Savvy`, `Mol'dar's Moxie`, `Darkmoon Faire`)
                         VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
     entireBuffsDF = entireBuffsDF.replace(numpy.nan, 0)
@@ -844,20 +862,20 @@ def buffsDataInsertions(db_connection, entireBuffsDF):
         print(rf'The following error has occurred: {e}')
 
 
-#Inserts the "parses" data into its corresponding table.
+# Inserts the "parses" data into its corresponding table.
 def parsesDataInsertions(db_connection, entireParsesDF, zoneID):
-
     bwl = "(`Names`, `Date`, `Razorgore`, `Vaelastrasz`, `Broodlord`, `Firemaw`, `Flamegor`, `Chromaggus`, `Nefarian`)"
-    aq = "(`Names`, `Date`, 'The Prophet Skeram', `Silithid Royalty`, `Battleguard Sartura`, `Fankriss the Unyielding`, `Viscidus`, `Princess Huhuran`, `Twin Emperors`, `Ouro`, `C\'thun`)"
+    aq = "(`Names`, `Date`, `The Prophet Skeram`, `Silithid Royalty`, `Battleguard Sartura`, `Fankriss the Unyielding`, `Viscidus`, `Princess Huhuran`, `Twin Emperors`, `Ouro`, `C\'thun`)"
 
     if zoneID == 2016:
         raid = aq
+        params = "(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
     if zoneID == 2013:
         raid = bwl
+        params = "(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
 
-    sqlStatement =  """INSERT INTO parses {raid}
-                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);""".format(raid = raid)
-
+    sqlStatement = """INSERT INTO parses {raid}
+                        VALUES {params};""".format(raid=raid, params=params)
 
     entireParsesDF = entireParsesDF.replace(numpy.nan, 0)
     parsesDataTuple = [tuple(parses) for parses in entireParsesDF.to_numpy()]
@@ -872,19 +890,19 @@ def parsesDataInsertions(db_connection, entireParsesDF, zoneID):
         print(rf'The following error has occurred: {e}')
 
 
-
-#Creates the dataframes using the provided data, creates tables in the users MySQL Workbench, and inserts the data
+# Creates the dataframes using the provided data, creates tables in the users MySQL Workbench, and inserts the data
 
 print("Please enter the username of your MySQL Workbench database.")
 user = input()
 print("Please enter the password of your MySQL Workbench database.")
 passwd = input()
 
-def etlPipeline(zoneID, user, passwd):
 
+def etlPipeline(zoneID, user, passwd):
     connection = databaseConnection(zoneID, user, passwd)
 
-    data = creatingDataFrames(zoneID, entire_parses_data, entire_cons_data, entire_buffs_data, entire_deaths_data, entire_raid_times_data, entire_kill_times_data)
+    data = creatingDataFrames(zoneID, entire_parses_data, entire_cons_data, entire_buffs_data, entire_deaths_data,
+                              entire_raid_times_data, entire_kill_times_data)
 
     killTimesTableCreation(connection, zoneID)
     deathsTableCreation(connection)
@@ -895,13 +913,14 @@ def etlPipeline(zoneID, user, passwd):
 
     deathsDataInsertions(connection, data['entireDeathsDF'])
     killTimesDataInsertions(connection, data['entireKillTimesDF'], zoneID)
-    raidTimesDataInsertions(connection, data['entireRaidTimeDF'])
+    raidTimesDataInsertions(connection, data['entireRaidTimesDF'])
     buffsDataInsertions(connection, data['entireBuffsDF'])
     consDataInsertions(connection, data['entireConsDF'])
-    parsesDataInsertions(connection, data['entireParsesDataDF'])
+    parsesDataInsertions(connection, data['entireParsesDF'], zoneID)
+
 
 etlPipeline(zoneID, user, passwd)
 
 end_script = time.time()
 running_time = round(end_script - start_script, 1)
-print(running_time, running_time/60)
+print(running_time, running_time / 60)
