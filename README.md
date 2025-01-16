@@ -11,7 +11,9 @@ I utilised Python to: query data from a publicly available API via GraphQL that 
 
 Examples of visualisations:
 
-[ReportScreenshot.pdf](https://github.com/user-attachments/files/18295411/ReportScreenshot.pdf)
+[ReportScreenshotAQ40.pdf](https://github.com/xAnarchic/WoW-Data-Analysis/blob/b79e3dc94bdd345e787fa61a5e2a955d4880eb37/guildreportsAQprax.pdf)
+
+[ReportScreenshotBWL.pdf](https://github.com/user-attachments/files/18295411/guildreportsBWLzomb.pdf)
 
 [ReportSnippet.pdf](https://github.com/user-attachments/files/18295406/ReportSnippet.pdf)
 
