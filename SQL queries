@@ -43,4 +43,14 @@ CREATE TABLE finalparses AS
 	ORDER BY ID, Names ASC;
 
 
+Queries only run for the BWL data to remove empty columns before import into PowerBi:
 
+1)
+ALTER TABLE kill_times
+DROP COLUMN BlankColumn1,
+DROP COLUMN BlankColumn2;
+
+2)
+ALTER TABLE finalparses
+DROP COLUMN BlankColumn1,
+DROP COLUMN BlankColumn2;
