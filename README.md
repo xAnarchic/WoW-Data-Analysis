@@ -13,7 +13,7 @@ Examples of visualisations:
 
 [ReportScreenshotAQ40.pdf](https://github.com/xAnarchic/WoW-Data-Analysis/blob/b79e3dc94bdd345e787fa61a5e2a955d4880eb37/guildreportsAQprax.pdf)
 
-[ReportScreenshotBWL.pdf](https://github.com/user-attachments/files/18295411/guildreportsBWLzomb.pdf)
+[ReportScreenshotBWL.pdf](https://github.com/xAnarchic/WoW-Data-Analysis/blob/1b43334cbaa793e01e9dbc6df40427387efbef4f/ReportScreenshot.pdf)
 
 [ReportSnippet.pdf](https://github.com/xAnarchic/WoW-Data-Analysis/blob/cc893fc7a96bd2ccd117971aef3dff052723cb58/ReportSnippet.pdf)
 
