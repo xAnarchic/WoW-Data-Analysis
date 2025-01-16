@@ -11,11 +11,11 @@ I utilised Python to: query data from a publicly available API via GraphQL that 
 
 Examples of visualisations:
 
-[ReportScreenshotAQ40.pdf](https://github.com/xAnarchic/WoW-Data-Analysis/blob/b79e3dc94bdd345e787fa61a5e2a955d4880eb37/guildreportsAQprax.pdf)
+[ReportScreenshotAQ40.pdf](https://github.com/xAnarchic/WoW-Data-Analysis/blob/42176dc2d184a1aa0b83fc22b1892dd37efdb6b2/Report%20screenshots/guildreportsAQprax.pdf)
 
-[ReportScreenshotBWL.pdf](https://github.com/xAnarchic/WoW-Data-Analysis/blob/1b43334cbaa793e01e9dbc6df40427387efbef4f/ReportScreenshot.pdf)
+[ReportScreenshotBWL.pdf](https://github.com/xAnarchic/WoW-Data-Analysis/blob/42176dc2d184a1aa0b83fc22b1892dd37efdb6b2/Report%20screenshots/guildreportsBWLzomb.pdf)
 
-[ReportSnippet.pdf](https://github.com/xAnarchic/WoW-Data-Analysis/blob/cc893fc7a96bd2ccd117971aef3dff052723cb58/ReportSnippet.pdf)
+[ReportSnippet.pdf](https://github.com/xAnarchic/WoW-Data-Analysis/blob/42176dc2d184a1aa0b83fc22b1892dd37efdb6b2/Report%20screenshots/ReportSnippet.pdf)
 
 
 
