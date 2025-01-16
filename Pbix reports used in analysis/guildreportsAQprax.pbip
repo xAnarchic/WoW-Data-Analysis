@@ -1,13 +1,1 @@
-{
-  "version": "1.0",
-  "artifacts": [
-    {
-      "report": {
-        "path": "guildreportsAQprax.Report"
-      }
-    }
-  ],
-  "settings": {
-    "enableAutoRecovery": true
-  }
-}
+<iframe title="guildreportsAQprax" width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiZjJiMGFjMzMtNWQ0My00ZDM2LWJiNDYtYzM0MTY0NDFlOGE3IiwidCI6IjEwYmVhZTdhLTBkZTctNDRiNC05NmNmLTc1ZWI0M2M5ZjI5MSJ9" frameborder="0" allowFullScreen="true"></iframe>
