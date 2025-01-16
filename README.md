@@ -15,7 +15,7 @@ Examples of visualisations:
 
 [ReportScreenshotBWL.pdf](https://github.com/user-attachments/files/18295411/guildreportsBWLzomb.pdf)
 
-[ReportSnippet.pdf](https://github.com/user-attachments/files/18295406/ReportSnippet.pdf)
+[ReportSnippet.pdf](https://github.com/xAnarchic/WoW-Data-Analysis/blob/cc893fc7a96bd2ccd117971aef3dff052723cb58/ReportSnippet.pdf)
 
 
 
