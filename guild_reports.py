@@ -12,8 +12,10 @@ import sys
 start_script = time.time()
 
 #Authenticating client.
-client_id = "9d4c1a49-91d2-4b7b-8445-824e4f6bac1b"
-client_secret = "0Y527wHR8EGP7T6Oa1TZdMvuxZFkVSrqYG1DLvIF"
+print("Please enter your client id.")
+client_id = input()
+print("Please enter your client secret.")
+client_secret = input()
 data = {
     'grant_type': 'client_credentials',
 }
