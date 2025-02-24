@@ -18,7 +18,9 @@ Examples of visualisations:
 [ReportSnippet.pdf](https://github.com/xAnarchic/WoW-Data-Analysis/blob/42176dc2d184a1aa0b83fc22b1892dd37efdb6b2/Report%20screenshots/ReportSnippet.pdf)
 
 
-The analysis uses data from the raid zone "Temple of Ahn'Qiraj", but users can also retrieve and visualise data from "Blackwing's Lair". Only guild data from the "Season of Discovery" version of Classic World of Warcraft should be used. Guild names and IDs can be found on the Warcraft Logs website: https://sod.warcraftlogs.com/
+The analysis uses data from the raid zone "Temple of Ahn'Qiraj", but users can also retrieve and visualise data from "Blackwing's Lair". Only guild data from the "Season of Discovery" version of Classic World of Warcraft should be used. Guild names and IDs can be found on the Warcraft Logs website: https://sod.warcraftlogs.com/ 
+
+A client id and secret can be created here: https://www.warcraftlogs.com/api/clients/ 
 
 
 
